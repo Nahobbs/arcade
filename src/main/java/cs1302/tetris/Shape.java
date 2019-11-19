@@ -9,6 +9,16 @@ import javafx.scene.shape;
  */
 public class Shape {
 
+    /**
+     * Enumerates the different types of shapes that can come out
+     * of the class.
+     */
+    protected enum Tetriminoe {
+        None, Z, S, Line, T, Sqr, L, ML
+    } //Tetriminoe
+
+    private Tetriminoe shape;
+
 
 
 } //Shape
