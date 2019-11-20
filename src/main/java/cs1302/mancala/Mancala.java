@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
 
 public class Mancala extends Application {
 
@@ -39,16 +40,18 @@ public class Mancala extends Application {
     public void start(Stage stage) {
         GridPane board = new GridPane();
         board.setPadding(new Insets(10, 10, 10, 10));
+        board.setHgap(0.3);
+        board.setVgap(0.3);
 
         //player 1's pits
-        Circle pit1 = new Circle(20, 20, 50);
+        Circle pit1 = new Circle(20, 20, 90);
         Circle pit2 = new Circle(20, 20, 50);
         Circle pit3 = new Circle(20, 20, 50);
         Circle pit4 = new Circle(20, 20, 50);
         Circle pit5 = new Circle(20, 20, 50);
         Circle pit6 = new Circle(20, 20, 50);
         //player 2's pits
-        Circle pit7 = new Circle(20, 20, 50);
+        Circle pit7 = new Circle(20, 20, 90);
         Circle pit8 = new Circle(20, 20, 50);
         Circle pit9 = new Circle(20, 20, 50);
         Circle pit10 = new Circle(20, 20, 50);
@@ -56,7 +59,39 @@ public class Mancala extends Application {
         Circle pit12 = new Circle(20, 20, 50);
 
         //both players stores
-        Rectangle p1Store = new Rectangle(150.0f, 75.0f, 80.0f, 100.0f);
-        Rectangle p2Store = new Rectangle(150.0f, 75.0f, 80.0f, 100.0f);
+        Rectangle p1Store = new Rectangle(400.0f, 75.0f);
+        Rectangle p2Store = new Rectangle(400.0f, 75.0f);
 
-} //mancala
+        //adds rudimentary objects to the gridpane
+//        board.add(p1Store, 0, 0);
+//        board.add(p2Store, 0, 7);
+
+        board.add(pit7, 0, 0);
+        board.add(pit1, 1, 0);
+
+        VBox Vbox = new VBox();
+
+        Vbox.getChildren().addAll(p1Store, board, p2Store);
+
+        Scene scene = new Scene(Vbox);
+
+		stage.setTitle("Mancala");
+		stage.setScene(scene);
+		stage.sizeToScene();
+		stage.setMaximized(true);
+		stage.show();
+    } //Mancala
+
+    public static void main(String[] args) {
+        try {
+            Application.launch(Mancala.class, args);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e);
+            System.err.println("If this is a DISPLAY problem, then your X server connection");
+            System.err.println("has likely timed out. This can generally be fixed by logging");
+            System.err.println("out and logging back in.");
+            System.exit(1);
+        } // try
+    } // main
+
+} //Mancala
