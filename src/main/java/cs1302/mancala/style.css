@@ -1,0 +1,16 @@
+#pane{
+    -fx-background-image: url("file:resources/mancala/Wood.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 1500 560;
+    -fx-background-position: center center;
+}
+
+#rect{
+    -fx-fill: rgba(0, 0, 0, 0.58);
+    -fx-stroke: rgba(0, 0, 0, 0.58);
+}
+
+#circ{
+    -fx-fill: rgba(0, 0, 0, 0.58);
+    -fx-stroke: rgba(0, 0, 0, 0.58);
+}
