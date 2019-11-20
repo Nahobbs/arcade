@@ -1,5 +1,6 @@
 package cs1302.mancala;
 
+import javafx.scene.layout.HBox;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -40,46 +41,84 @@ public class Mancala extends Application {
     public void start(Stage stage) {
         GridPane board = new GridPane();
         board.setPadding(new Insets(10, 10, 10, 10));
-        board.setHgap(0.3);
-        board.setVgap(0.3);
+        board.setHgap(6);
+        board.setVgap(6);
 
         //player 1's pits
-        Circle pit1 = new Circle(20, 20, 90);
-        Circle pit2 = new Circle(20, 20, 50);
-        Circle pit3 = new Circle(20, 20, 50);
-        Circle pit4 = new Circle(20, 20, 50);
-        Circle pit5 = new Circle(20, 20, 50);
-        Circle pit6 = new Circle(20, 20, 50);
+        Circle pit1 = new Circle(20, 20, 70);
+        Circle pit2 = new Circle(20, 20, 70);
+        Circle pit3 = new Circle(20, 20, 70);
+        Circle pit4 = new Circle(20, 20, 70);
+        Circle pit5 = new Circle(20, 20,70);
+        Circle pit6 = new Circle(20, 20, 70);
         //player 2's pits
-        Circle pit7 = new Circle(20, 20, 90);
-        Circle pit8 = new Circle(20, 20, 50);
-        Circle pit9 = new Circle(20, 20, 50);
-        Circle pit10 = new Circle(20, 20, 50);
-        Circle pit11 = new Circle(20, 20, 50);
-        Circle pit12 = new Circle(20, 20, 50);
+        Circle pit7 = new Circle(20, 20, 70);
+        Circle pit8 = new Circle(20, 20, 70);
+        Circle pit9 = new Circle(20, 20, 70);
+        Circle pit10 = new Circle(20, 20, 70);
+        Circle pit11 = new Circle(20, 20, 70);
+        Circle pit12 = new Circle(20, 20, 70);
 
         //both players stores
-        Rectangle p1Store = new Rectangle(400.0f, 75.0f);
-        Rectangle p2Store = new Rectangle(400.0f, 75.0f);
+        Rectangle p1Store = new Rectangle(110.0, 300.0);
+        p1Store.setArcWidth(110.0);
+        p1Store.setArcHeight(110.0);
+        Rectangle p2Store = new Rectangle(110.0, 300.0);
+        p2Store.setArcWidth(110.0);
+        p2Store.setArcHeight(110.0);
+
+        p1Store.setId("rect");
+        p2Store.setId("rect");
+        pit1.setId("circ");
+        pit2.setId("circ");
+        pit3.setId("circ");
+        pit4.setId("circ");
+        pit5.setId("circ");
+        pit6.setId("circ");
+        pit7.setId("circ");
+        pit8.setId("circ");
+        pit9.setId("circ");
+        pit10.setId("circ");
+        pit11.setId("circ");
+        pit12.setId("circ");
 
         //adds rudimentary objects to the gridpane
 //        board.add(p1Store, 0, 0);
 //        board.add(p2Store, 0, 7);
 
-        board.add(pit7, 0, 0);
-        board.add(pit1, 1, 0);
+        //adds p1 pits
+        board.add(pit1, 0, 0);
+        board.add(pit2, 1, 0);
+        board.add(pit3, 2, 0);
+        board.add(pit4, 3, 0);
+        board.add(pit5, 4, 0);
+        board.add(pit6, 5, 0);
+        //adds p2 pits
+        board.add(pit7, 0, 1);
+        board.add(pit8, 1, 1);
+        board.add(pit9, 2, 1);
+        board.add(pit10, 3, 1);
+        board.add(pit11, 4, 1);
+        board.add(pit12, 5, 1);
 
-        VBox Vbox = new VBox();
 
-        Vbox.getChildren().addAll(p1Store, board, p2Store);
+        HBox Hbox = new HBox();
 
-        Scene scene = new Scene(Vbox);
+        Hbox.getChildren().addAll(p1Store, board, p2Store);
+        Hbox.setAlignment(Pos.CENTER);
+
+        //StackPane root = new StackPane();
+        Hbox.setId("pane");
+        Scene scene = new Scene(Hbox);
+        scene.getStylesheets().addAll("file:src/main/java/cs1302/mancala/style.css");
 
 		stage.setTitle("Mancala");
 		stage.setScene(scene);
-		stage.sizeToScene();
+		//stage.sizeToScene();
+        stage.setWidth(1150);
 		stage.setMaximized(true);
-		stage.show();
+        stage.setResizable(false);
+        stage.show();
     } //Mancala
 
     public static void main(String[] args) {
