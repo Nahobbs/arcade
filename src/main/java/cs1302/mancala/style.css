@@ -8,9 +8,38 @@
 #rect{
     -fx-fill: rgba(0, 0, 0, 0.58);
     -fx-stroke: rgba(0, 0, 0, 0.58);
+    -fx-arc-width: 110.0;
+    -fx-arc-height: 110.0;
 }
 
 #circ{
     -fx-fill: rgba(0, 0, 0, 0.58);
     -fx-stroke: rgba(0, 0, 0, 0.58);
+}
+
+#circ:hover{
+    -fx-fill: rgba(25, 25, 25, 0.58);
+    -fx-stroke: rgba(25, 25, 25, 0.58);
+}
+
+.button{
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-background-radius: 70.0;
+    -fx-min-width: 140.0;
+    -fx-min-height: 140.0;
+    -fx-max-width: 140.0;
+    -fx-max-height: 140.0;
+    -fx-background-color: rgba(0, 0, 0, 0.58);
+    -fx-stroke: rgba(0, 0, 0, 0.58);
+}
+
+.button:hover{
+    -fx-background-color: rgba(25, 25, 25, 0.58);
+    -fx-stroke: rgba(25, 25, 25, 0.58);
+}
+
+.button:pressed{
+    -fx-background-color: rgba(86, 86, 86, 0.58);
+    -fx-stroke: rgba(86, 86, 86, 0.58);
 }
