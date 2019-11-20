@@ -1,17 +1,15 @@
 # Reflection
 
-Add to this file to satisfy the "Reflection Updates" non-functional requirement
-for this project. Please keep this document organized using Markdown. If you
-click on this file in your team's GitHub repository website, then you will see
-that the Markdown is transformed into nice looking HTML.
+Ethan Simms & Nick Hobbs
 
 
-## SUN 2019-04-05 @ 11:55 PM EST
+## TUE 11/19/2019
 
-1. **DONE:** Downloaded the skeleton code.
+DONE: -Created the starting classes for our two games, Tetris and Mancala
+      -Enumerated the different shape types for the Tetrominoes of Tetris
+      -Set-up and established the different elements of our project for the future
 
-2. **TODO:** Finish reading the project description.
+TODO: -Finish implementing the rest of Shape (the pieces for Tetris)
+      -Implement more elements of the Mancala game
 
-3. **PROB:** Had a hard time scheduling physicial meetings with each other at
-   first, but now that we've settled on a regular day/time things are looking
-   great!
+PROB: -Developing scene graphs and layouts for both games to get them working
