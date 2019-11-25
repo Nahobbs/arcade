@@ -54,9 +54,46 @@ public class Shape {
         }
         loc = shapeSpot;
 
+        shape = style;
 
     } //setShape
 
+    /**
+     * Returns the shape of this instance of the object.
+     * @return the Tetrominoe type for this instance
+     */
+    public Tetrominoe getShape() {
+        return shape;
+    } //getShape
 
+    /**
+     * Replaces the current shape with a random one generated
+     * by the program.
+     */
+    public static void randomShape() {
+        Random r = new Random();
+        //have to use absolute value to avoid negative numbers
+        int rand = Math.abs(r.nextInt()) % 7 + 1;
+
+        Tetrominoe[] tetro = Tetrominoe.values(); //holds all the values of the style
+        setShape(tetro[x]); //replaces the shape
+    } //randomShape
+
+    /**
+     * Rotates the shape left or right based on the input.
+     * @param cmd the direction the shape shall be rotated
+     */
+    public Shape rotate(String cmd) {
+        if (shape == Tetrominoe.Sqr) {
+            return this;
+        }
+
+        Shape rotated = new Shape();
+        rotated.shape = shape;
+
+        if (cmd.equalsIgnoreCase("left")) {
+            for (int i = 0; i < 4; i++) {
+                rotated
+    } //rotate
 
 } //Shape
