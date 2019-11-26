@@ -70,13 +70,13 @@ public class Shape {
      * Replaces the current shape with a random one generated
      * by the program.
      */
-    public static void randomShape() {
+    public void randomShape() {
         Random r = new Random();
         //have to use absolute value to avoid negative numbers
         int rand = Math.abs(r.nextInt()) % 7 + 1;
 
         Tetrominoe[] tetro = Tetrominoe.values(); //holds all the values of the style
-        setShape(tetro[x]); //replaces the shape
+        setShape(tetro[rand]); //replaces the shape
     } //randomShape
 
     /**
@@ -93,7 +93,53 @@ public class Shape {
 
         if (cmd.equalsIgnoreCase("left")) {
             for (int i = 0; i < 4; i++) {
-                rotated
+                rotated.setX(i,rotated.getY(i));
+                rotated.setY(i,-rotated.getX(i));
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                rotated.setX(i,-rotated.getY(i));
+                rotated.setY(i,rotated.getX(i));
+            }
+        }
+
+
+        return rotated;
     } //rotate
+
+    /**
+     * Returns the x coordinate of the shape.
+     * @param point one of the four points to check the x for
+     * @return the x coordinate of the shape
+     */
+    public int getX(int point) {
+        return loc[point][0];
+    } //getX
+
+    /**
+     * Returns the y coordinate of the shape.
+     * @param point one of the four points to check the y for
+     * @return the y coordinate of the shape
+     */
+    public int getY(int point) {
+        return loc[point][1];
+    } //getY
+
+    /**
+     * Sets the new location of the x value for a given point.
+     * @param point the point of the shape to adjust
+     */
+    public void setX(int point, int x) {
+        loc[point][0] = x;
+    } //setX
+
+    /**
+     * Sets the new location of the y value for a given point.
+     * @param point the point of the shape to adjust
+     */
+    public void setY(int point, int y) {
+        loc[point][1] = y;
+    } //setY
+
 
 } //Shape
