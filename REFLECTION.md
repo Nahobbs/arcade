@@ -18,8 +18,12 @@ PROB: -Developing scene graphs and layouts for both games to get them working
 
 DONE: -Implemented the rest of Shape; got it to compile
       -Began working on implementing Board
+      -Changed the rudimentary shapes on the mancala board to buttons
+      -Skinned the mancala board and the new buttons
 
 TODO: -Finish implementing the rest of Board (the game of Tetris)
+      -Implement the button actions for the functionality of Mancala(allows players to make moves)
 
 PROB: -Using javafx to accurately display the pieces created from Shape
       -Properly importing and generating the shape objects created from Shape
+      -overlaying the numbers on the pits and stores
