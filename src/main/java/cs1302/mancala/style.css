@@ -43,3 +43,8 @@
     -fx-background-color: rgba(86, 86, 86, 0.58);
     -fx-stroke: rgba(86, 86, 86, 0.58);
 }
+
+#text{
+    -fx-fill: white;
+    -fx-font-size: 20;
+}

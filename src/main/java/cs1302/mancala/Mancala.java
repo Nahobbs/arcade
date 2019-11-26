@@ -1,5 +1,7 @@
 package cs1302.mancala;
 
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.scene.layout.HBox;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -20,6 +22,9 @@ import javafx.scene.layout.VBox;
 
 public class Mancala extends Application {
 
+    //girdpane for pits
+    private static GridPane board = new GridPane();
+
     //initial ints that represent the amount of stones in a pit or store
     //the pits of the game
     private static int p1 = 4;
@@ -34,37 +39,24 @@ public class Mancala extends Application {
     private static int p10 = 4;
     private static int p11 = 4;
     private static int p12 = 4;
-    //player stores for their collected pieces(points)
+    //ints for the player stores for their collected pieces(points)
     private static int store1 = 0;
     private static int store2 = 0;
 
-    //shapes in the scene graph that are the pits and stores
-    //player 1's pits
-    // private static Circle pit1 = new Circle(20, 20, 70);
-    // private static Circle pit2 = new Circle(20, 20, 70);
-    // private static Circle pit3 = new Circle(20, 20, 70);
-    // private static Circle pit4 = new Circle(20, 20, 70);
-    // private static Circle pit5 = new Circle(20, 20,70);
-    // private static Circle pit6 = new Circle(20, 20, 70);
-    // //player 2's pits
-    // private static Circle pit7 = new Circle(20, 20, 70);
-    // private static Circle pit8 = new Circle(20, 20, 70);
-    // private static Circle pit9 = new Circle(20, 20, 70);
-    // private static Circle pit10 = new Circle(20, 20, 70);
-    // private static Circle pit11 = new Circle(20, 20, 70);
-    // private static Circle pit12 = new Circle(20, 20, 70);
-    //both players stores
+    //both players stores shapes
     private static Rectangle p1Store = new Rectangle(110.0, 300.0);
+    private static StackPane s1 = new StackPane();
     private static Rectangle p2Store = new Rectangle(110.0, 300.0);
+    private static StackPane s2 = new StackPane();
 
-    private static GridPane board = new GridPane();
-
+    //player 1 pit buttons
     private static Button pit1 = new Button("" + p1);
     private static Button pit2 = new Button("" + p2);
     private static Button pit3 = new Button("" + p3);
     private static Button pit4 = new Button("" + p4);
     private static Button pit5 = new Button("" + p5);
     private static Button pit6 = new Button("" + p6);
+    //player 2 pit buttons
     private static Button pit7 = new Button("" + p7);
     private static Button pit8 = new Button("" + p8);
     private static Button pit9 = new Button("" + p9);
@@ -82,13 +74,12 @@ public class Mancala extends Application {
         setIds();
         addShapes();
 
-        //adds rudimentary objects to the gridpane
-//        board.add(p1Store, 0, 0);
-//        board.add(p2Store, 0, 7);
-
         HBox Hbox = new HBox();
 
-        Hbox.getChildren().addAll(p1Store, board, p2Store);
+        //overlays the number of points on the player stores
+        setPoints(store1, s1, p1Store);
+        setPoints(store2, s2, p2Store);
+        Hbox.getChildren().addAll(s1, board, s2);
         Hbox.setAlignment(Pos.CENTER);
 
         //StackPane root = new StackPane();
@@ -98,7 +89,6 @@ public class Mancala extends Application {
 
 		stage.setTitle("Mancala");
 		stage.setScene(scene);
-		//stage.sizeToScene();
         stage.setWidth(1150);
 		stage.setMaximized(true);
         stage.setResizable(false);
@@ -139,5 +129,13 @@ public class Mancala extends Application {
         board.add(pit12, 5, 1);
     } //addShapes
 
+    /**
+     * overlays player points on their store.
+     */
+    public static void setPoints(int points, StackPane sp, Rectangle rect) {
+        Text score = new Text("" + points);
+        score.setId("text");
+        sp.getChildren().addAll(rect, score);
+    } //setPoints
 
 } //Mancala
