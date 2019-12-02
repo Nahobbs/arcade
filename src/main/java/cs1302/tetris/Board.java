@@ -2,7 +2,8 @@ package cs1302.tetris;
 
 import cs1302.tetris.Shape.Tetrominoe;
 import javafx.animation.Timeline;
-//import javafx.scene.Control.*;
+import java.awt.Graphics;
+import java.awt.Color;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -37,6 +38,26 @@ public class Board {
         shapes = new Tetrominoe[WIDTH * HEIGHT];
 
     } //Board constructor
+
+    /**
+     * Draws the shapes present in the board.
+     *
+     */
+    public void draw(Graphics grphs, int x, int y, Tetrominoe style) {
+        int shape = style.ordinal();
+        Color c;
+        Color[] options = {
+            new Color(0, 0, 0), new Color(144, 238, 144), new Color(100,0,0),
+            new Color(0,75,100), new Color(58, 44, 86), new Color(100,100,0),
+            new Color(0,0,55), new Color(100,75,0)
+        };
+        c = options[shape];
+
+        grphs.setColor(c);
+        grphs.fillRect(x + 1, y + 1, 2, 2);
+
+
+    } //draw
 
     /**
      * Returns the shape currently located at the index on the board.
