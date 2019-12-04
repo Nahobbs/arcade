@@ -110,6 +110,38 @@ public class Tetris extends Application {
                 base = new Rectangle(1, 1, Color.ORANGE);
                 addShape(1, i, base);
             }
+        } else if (style == 4) {
+            for (int i = 5; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.NAVY);
+                addShape(0, i, base);
+            }
+            for (int i = 7; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.NAVY);
+                addShape(1, i, base);
+            }
+        } else if (style == 5) {
+            for (int i = 6; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.YELLOW);
+                addShape(0, i, base);
+            }
+            for (int i = 6; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.YELLOW);
+                addShape(1, i, base);
+            }
+        } else if (style == 6) {
+            for (int i = 5; i < 9; i++) {
+                base = new Rectangle(1, 1, Color.LIGHTCYAN);
+                addShape(0, i, base);
+            }
+        } else if (style == 7) {
+            for (int i = 5; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.MEDIUMPURPLE);
+                addShape(0, i, base);
+            }
+            for (int i = 6; i < 7; i++) {
+                base = new Rectangle(1, 1, Color.MEDIUMPURPLE);
+                addShape(1, i, base);
+            }
         }
 
     } //makeShape
@@ -121,15 +153,22 @@ public class Tetris extends Application {
      * @param add the rectangle to add to the grid
      */
     public void addShape(int row, int col, Rectangle add) {
-
+        if (testMove(row, col)) {
+            gp.add(add, col, row);
+        }
     } //addShape
 
     /**
      * Tests to see if the piece can continue moving down/other
      * directions.
      */
-    public boolean testMove() {
-        return true;
+    public boolean testMove(int row, int col) {
+        Rectangle spot = getRect(row, col);
+        if (spot.getFill() == Color.WHITE && row < 20 && row >= 0 && col < 10 && col >= 0) {
+            return true;
+        } else {
+            return false;
+        }
 
     } //testMove
 
@@ -196,4 +235,22 @@ public class Tetris extends Application {
             }
         }
     } //defaultStart
+
+    /**
+     * Gets a child from the GridPane to compare to other elements.
+     * @param row the row to examine
+     * @param col the column to examine
+     * @return the rectangle at the given point
+     */
+    public Node getRect (int row, int column) {
+        Node result = null;
+        ObservableList<Node> childrens = gp.getChildren();
+        for (Node node : childrens) {
+            if(gp.getRowIndex(node) == row && gp.getColumnIndex(node) == column) {
+                result = node;
+                break;
+            }
+        }
+        return result;
+    } //getRect
 } //Tetris
