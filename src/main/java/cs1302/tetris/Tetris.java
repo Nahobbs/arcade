@@ -30,10 +30,10 @@ public class Tetris extends Application {
     private HBox container;
     private int width;
     private int height;
-    private Rectangle one;
-    private Rectangle two;
-    private Rectangle three;
-    private Rectangle four;
+    private Rectangle base;
+    //private Rectangle two;
+    //private Rectangle three;
+    //private Rectangle four;
     private GridPane gp;
     private Timeline tl;
     private int numLines = 0;
@@ -51,10 +51,10 @@ public class Tetris extends Application {
         container = new HBox();
         width = 10;
         height = 20;
-        one = null;
-        two = null;
-        three = null;
-        four = null;
+        base = null;
+        //two = null;
+        //three = null;
+        //four = null;
         gp = new GridPane();
         //tl = new Timeline();
         shapes = Tetrominoe.values();
@@ -82,13 +82,45 @@ public class Tetris extends Application {
      * new rectangle objects.
      */
     public void makeShape() {
+        int style = piece.ordinal();
+        if (style == 1) { //S-shape block
+            for (int i = 6; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.LIGHTGREEN);
+                addShape(0, i, base);
+            }
+            for (int i = 5; i < 7; i++) {
+                base = new Rectangle(1, 1, Color.LIGHTGREEN);
+                addShape(1, i, base);
+            }
+        } else if (style == 2) { //Z-shape block
+            for (int i = 5; i < 7; i++) {
+                base = new Rectangle(1, 1, Color.RED);
+                addShape(0, i, base);
+            }
+            for (int i = 6; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.RED);
+                addShape(1, i, base);
+            }
+        } else if (style == 3) {
+            for (int i = 5; i < 8; i++) {
+                base = new Rectangle(1, 1, Color.ORANGE);
+                addShape(0, i, base);
+            }
+            for (int i = 5; i < 6; i++) {
+                base = new Rectangle(1, 1, Color.ORANGE);
+                addShape(1, i, base);
+            }
+        }
 
     } //makeShape
 
     /**
      * Adds created shape to the grid.
+     * @param row the row of insertion
+     * @param col the column of insertion
+     * @param add the rectangle to add to the grid
      */
-    public void addShape() {
+    public void addShape(int row, int col, Rectangle add) {
 
     } //addShape
 

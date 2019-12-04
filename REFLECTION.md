@@ -27,3 +27,17 @@ TODO: -Finish implementing the rest of Board (the game of Tetris)
 PROB: -Using javafx to accurately display the pieces created from Shape
       -Properly importing and generating the shape objects created from Shape
       -overlaying the numbers on the pits and stores
+
+## TUE 12/03/2019
+
+DONE: -Had to rework the ideas behind the Tetris game, the original concept was not working.
+      -Created a new Tetris game class to work with Rectangle objects, better for use of gridpane
+      -Started working on the Arcade face of the app, which will be the menu to get to the two games
+
+TODO: -Finish the project
+      -Complete the Tetris class, which will contain the logic and functionality of the game
+      -Complete and implement the components of Mancala to finish the functionality for the game
+
+PROB: -Getting the lines of Rectangles to disappear if there is a full row
+      -Getting the graphics for the different buttons to work
+      -Connecting everything together in one seamless presentation.
