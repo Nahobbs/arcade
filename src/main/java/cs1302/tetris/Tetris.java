@@ -10,6 +10,8 @@ import javafx.scene.layout.GridPane;
 import javafx.animation.Timeline;
 import javafx.scene.paint.Color;
 import java.util.Random;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
 /**
  * The logic and structure for a standard game of Tetris. Includes
@@ -177,6 +179,7 @@ public class Tetris extends Application {
      */
     public void updateLeft() {
 
+
     } //updateLeft
 
     /**
@@ -213,8 +216,46 @@ public class Tetris extends Application {
      * are full of rectangles.
      */
     public void checkBoard() {
+        for (int i = 20; i >= 0; i--) {
+            int count = 0;
+            for (int j = 0; j < 10; j++) {
+                Rectangle test = getRect(i, j);
+                if (test.getFill() != Color.WHITE) {
+                    count++;
+                }
+            }
+            if (count == 10) {
+                clearRow(i);
+                shiftDown(i);
+            }
+        }
 
     } //checkBoard
+
+    /**
+     * Clears a row from the board and increases the number of lines removed
+     * counter.
+     * @param row the row to clear
+     */
+    public void clearRow(int row) {
+        for (int i = 0; i < 10; i++) {
+            addShape(row, i, new Rectangle(1, 1, Color.WHITE));
+        }
+    } //clearRow
+
+    /**
+     * Shifts all the squares above a row that has been cleared down one.
+     * @param row the row to start from
+     */
+    public void shiftDown(int row) {
+        for (int i = row; i >= 0; i--) {
+            for (int j = 0; j < 10; j++) {
+                if (getRect(i - 1, j).getFill() != Color.WHITE) {
+                    addShape(i, j, getRect(i - 1, j));
+                }
+            }
+        }
+    } //shiftDown
 
     /**
      * Gets a random shape from a passed array and assigns it to piece.
@@ -242,15 +283,7 @@ public class Tetris extends Application {
      * @param col the column to examine
      * @return the rectangle at the given point
      */
-    public Node getRect (int row, int column) {
-        Node result = null;
-        ObservableList<Node> childrens = gp.getChildren();
-        for (Node node : childrens) {
-            if(gp.getRowIndex(node) == row && gp.getColumnIndex(node) == column) {
-                result = node;
-                break;
-            }
-        }
-        return result;
+    public Rectangle getRect (int row, int column) {
+        return (Rectangle) gp.getChildren().get(row * 20 + column);
     } //getRect
 } //Tetris
