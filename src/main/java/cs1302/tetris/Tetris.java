@@ -43,6 +43,7 @@ public class Tetris extends Application {
     private Tetrominoe piece;
     private Tetrominoe[] shapes;
     private Random rand = new Random();
+    private int s = 10;
 
     /**
      * The start method for the application.
@@ -58,6 +59,7 @@ public class Tetris extends Application {
         //three = null;
         //four = null;
         gp = new GridPane();
+        gp.setGridLinesVisible(true);
         //tl = new Timeline();
         shapes = Tetrominoe.values();
         randomShape(shapes);
@@ -66,13 +68,14 @@ public class Tetris extends Application {
         while (playing) {
             playing = false;
         }
+        turn();
         board.getChildren().add(gp);
         container.getChildren().addAll(score, board);
 
         Scene scene = new Scene(container);
         stage.sizeToScene();
         stage.setMaxWidth(500);
-        stage.setMaxHeight(480);
+        stage.setMaxHeight(500);
         stage.setTitle("Tetris");
         stage.setScene(scene);
         stage.show();
@@ -87,61 +90,61 @@ public class Tetris extends Application {
         int style = piece.ordinal();
         if (style == 1) { //S-shape block
             for (int i = 6; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.LIGHTGREEN);
+                base = new Rectangle(s, s, Color.LIGHTGREEN);
                 addShape(0, i, base);
             }
             for (int i = 5; i < 7; i++) {
-                base = new Rectangle(1, 1, Color.LIGHTGREEN);
+                base = new Rectangle(s, s, Color.LIGHTGREEN);
                 addShape(1, i, base);
             }
         } else if (style == 2) { //Z-shape block
             for (int i = 5; i < 7; i++) {
-                base = new Rectangle(1, 1, Color.RED);
+                base = new Rectangle(s, s, Color.RED);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.RED);
+                base = new Rectangle(s, s, Color.RED);
                 addShape(1, i, base);
             }
         } else if (style == 3) {
             for (int i = 5; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.ORANGE);
+                base = new Rectangle(s, s, Color.ORANGE);
                 addShape(0, i, base);
             }
             for (int i = 5; i < 6; i++) {
-                base = new Rectangle(1, 1, Color.ORANGE);
+                base = new Rectangle(s, s, Color.ORANGE);
                 addShape(1, i, base);
             }
         } else if (style == 4) {
             for (int i = 5; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.NAVY);
+                base = new Rectangle(s, s, Color.NAVY);
                 addShape(0, i, base);
             }
             for (int i = 7; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.NAVY);
+                base = new Rectangle(s, s, Color.NAVY);
                 addShape(1, i, base);
             }
         } else if (style == 5) {
             for (int i = 6; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.YELLOW);
+                base = new Rectangle(s, s, Color.YELLOW);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.YELLOW);
+                base = new Rectangle(s, s, Color.YELLOW);
                 addShape(1, i, base);
             }
         } else if (style == 6) {
             for (int i = 5; i < 9; i++) {
-                base = new Rectangle(1, 1, Color.LIGHTCYAN);
+                base = new Rectangle(s, s, Color.LIGHTCYAN);
                 addShape(0, i, base);
             }
         } else if (style == 7) {
             for (int i = 5; i < 8; i++) {
-                base = new Rectangle(1, 1, Color.MEDIUMPURPLE);
+                base = new Rectangle(s, s, Color.MEDIUMPURPLE);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 7; i++) {
-                base = new Rectangle(1, 1, Color.MEDIUMPURPLE);
+                base = new Rectangle(s, s, Color.MEDIUMPURPLE);
                 addShape(1, i, base);
             }
         }
@@ -272,7 +275,7 @@ public class Tetris extends Application {
     public void defaultStart() {
         for (int i = 0; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                gp.add(new Rectangle(1, 1, Color.WHITE), j, i);
+                gp.add(new Rectangle(s, s, Color.WHITE), j, i);
             }
         }
     } //defaultStart
@@ -286,4 +289,13 @@ public class Tetris extends Application {
     public Rectangle getRect (int row, int column) {
         return (Rectangle) gp.getChildren().get(row * 20 + column);
     } //getRect
+
+    /**
+     * A turn in the game.
+     */
+    public void turn() {
+        randomShape(shapes);
+        makeShape();
+    } //turn
+
 } //Tetris

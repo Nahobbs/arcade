@@ -1,7 +1,7 @@
 package cs1302.arcade;
 
 import java.util.Random;
-
+import javafx.stage.Modality;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -12,7 +12,9 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-
+import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
+import cs1302.tetris.Tetris;
 
 /**
  * Application subclass for {@code ArcadeApp}.
@@ -23,6 +25,7 @@ public class ArcadeApp extends Application {
     Group group = new Group();           // main container
     Random rng = new Random();           // random number generator
     Rectangle r = new Rectangle(20, 20); // some rectangle
+    Button tetris = new Button("Tetris");
 
     /**
      * Return a mouse event handler that moves to the rectangle to a random
@@ -75,6 +78,14 @@ public class ArcadeApp extends Application {
         group.getChildren().add(r);                // add to main container
         r.setOnMouseClicked(createMouseHandler()); // clicks on the rectangle move it randomly
         group.setOnKeyPressed(createKeyHandler()); // left-right key presses move the rectangle
+        Stage tetrisStage = new Stage();
+        tetrisStage.initModality(Modality.APPLICATION_MODAL);
+        Tetris game = new Tetris();
+        EventHandler<ActionEvent> tetrisStart = event -> {
+            game.start(tetrisStage);
+        };
+        tetris.setOnAction(tetrisStart);
+        group.getChildren().add(tetris);
 
         Scene scene = new Scene(group, 640, 480);
         stage.setTitle("cs1302-arcade!");
