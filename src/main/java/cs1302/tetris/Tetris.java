@@ -33,6 +33,7 @@ public class Tetris extends Application {
     private int width;
     private int height;
     private Rectangle base;
+    private Rectangle white;
     //private Rectangle two;
     //private Rectangle three;
     //private Rectangle four;
@@ -42,8 +43,12 @@ public class Tetris extends Application {
     private boolean playing = true;
     private Tetrominoe piece;
     private Tetrominoe[] shapes;
+    private Color[] colors = {
+        Color.LIGHTGREEN, Color.RED, Color.ORANGE, Color.NAVY, Color.YELLOW,
+        Color.LIGHTCYAN, Color.MEDIUMPURPLE
+    };
     private Random rand = new Random();
-    private int s = 10;
+    private int s = 30;
 
     /**
      * The start method for the application.
@@ -55,6 +60,8 @@ public class Tetris extends Application {
         width = 10;
         height = 20;
         base = null;
+        white = new Rectangle(s, s, Color.WHITE);
+        white.setStroke(Color.BLACK);
         //two = null;
         //three = null;
         //four = null;
@@ -74,8 +81,8 @@ public class Tetris extends Application {
 
         Scene scene = new Scene(container);
         stage.sizeToScene();
-        stage.setMaxWidth(500);
-        stage.setMaxHeight(500);
+        stage.setMaxWidth(550);
+        stage.setMaxHeight(550);
         stage.setTitle("Tetris");
         stage.setScene(scene);
         stage.show();
@@ -91,60 +98,73 @@ public class Tetris extends Application {
         if (style == 1) { //S-shape block
             for (int i = 6; i < 8; i++) {
                 base = new Rectangle(s, s, Color.LIGHTGREEN);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 5; i < 7; i++) {
                 base = new Rectangle(s, s, Color.LIGHTGREEN);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         } else if (style == 2) { //Z-shape block
             for (int i = 5; i < 7; i++) {
                 base = new Rectangle(s, s, Color.RED);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 8; i++) {
                 base = new Rectangle(s, s, Color.RED);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         } else if (style == 3) {
             for (int i = 5; i < 8; i++) {
                 base = new Rectangle(s, s, Color.ORANGE);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 5; i < 6; i++) {
                 base = new Rectangle(s, s, Color.ORANGE);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         } else if (style == 4) {
             for (int i = 5; i < 8; i++) {
                 base = new Rectangle(s, s, Color.NAVY);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 7; i < 8; i++) {
                 base = new Rectangle(s, s, Color.NAVY);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         } else if (style == 5) {
             for (int i = 6; i < 8; i++) {
                 base = new Rectangle(s, s, Color.YELLOW);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 8; i++) {
                 base = new Rectangle(s, s, Color.YELLOW);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         } else if (style == 6) {
             for (int i = 5; i < 9; i++) {
                 base = new Rectangle(s, s, Color.LIGHTCYAN);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
         } else if (style == 7) {
             for (int i = 5; i < 8; i++) {
                 base = new Rectangle(s, s, Color.MEDIUMPURPLE);
+                base.setStroke(Color.BLACK);
                 addShape(0, i, base);
             }
             for (int i = 6; i < 7; i++) {
                 base = new Rectangle(s, s, Color.MEDIUMPURPLE);
+                base.setStroke(Color.BLACK);
                 addShape(1, i, base);
             }
         }
@@ -181,7 +201,14 @@ public class Tetris extends Application {
      * Moves the piece to the left.
      */
     public void updateLeft() {
-
+        for (int i = 0; i < 4; i++) {
+            int row = findR(i);
+            int col = findC(i);
+            if (testMove(row, col - 1)) {
+                addShape(row, col - 1, getRect(row, col));
+                addShape(row, col, white);
+            }
+        }
 
     } //updateLeft
 
@@ -189,6 +216,14 @@ public class Tetris extends Application {
      * Moves the piece to the right.
      */
     public void updateRight() {
+        for (int i = 0; i < 4; i++) {
+            int row = findR(i);
+            int col = findC(i);
+            if (testMove(row, col + 1)) {
+                addShape(row, col + 1, getRect(row, col));
+                addShape(row, col, white);
+            }
+        }
 
     } //updateRight
 
@@ -213,6 +248,54 @@ public class Tetris extends Application {
     public void moveDown() {
 
     } //moveDown
+
+    /**
+     * Finds the current piece on the board and returns it's location.
+     * @param n the number of the rectangle in the piece to find and move
+     * @return the rectangle at the specified location
+     */
+    public int findR(int n) {
+        Color find = colors[piece.ordinal()];
+        int count = 0;
+        int result = 0;
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (getRect(i, j).getFill() == find) {
+                    count++;
+                    if (count == n) {
+                        result = i;
+                        count++;
+                    }
+                }
+            }
+        }
+        return result;
+
+    } //findR
+
+    /**
+     * Finds the current piece on the board and returns it's location.
+     * @param n the number of the rectangle in the piece to find and move
+     * @return the rectangle at the specified location
+     */
+    public int findC(int n) {
+        Color find = colors[piece.ordinal()];
+        int count = 0;
+        int result = 0;
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (getRect(i, j).getFill() == find) {
+                    count++;
+                    if (count == n) {
+                        result = j;
+                        count++;
+                    }
+                }
+            }
+        }
+        return result;
+
+    } //findC
 
     /**
      * Scans the board from the bottom up to see how many rows
@@ -242,7 +325,9 @@ public class Tetris extends Application {
      */
     public void clearRow(int row) {
         for (int i = 0; i < 10; i++) {
-            addShape(row, i, new Rectangle(1, 1, Color.WHITE));
+            Rectangle fill = new Rectangle(s, s, Color.WHITE);
+            fill.setStroke(Color.BLACK);
+            addShape(row, i, fill);
         }
     } //clearRow
 
@@ -275,7 +360,9 @@ public class Tetris extends Application {
     public void defaultStart() {
         for (int i = 0; i < height; i++) {
             for (int j = 1; j < width; j++) {
-                gp.add(new Rectangle(s, s, Color.WHITE), j, i);
+                Rectangle fill = new Rectangle(s, s, Color.WHITE);
+                fill.setStroke(Color.BLACK);
+                gp.add(fill, j, i);
             }
         }
     } //defaultStart
