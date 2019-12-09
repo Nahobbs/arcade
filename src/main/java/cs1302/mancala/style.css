@@ -1,28 +1,40 @@
-#pane{
+#pane {
     -fx-background-image: url("file:resources/mancala/Wood.jpg");
     -fx-background-repeat: stretch;
     -fx-background-size: 1500 560;
     -fx-background-position: center center;
 }
 
-#rect{
+#rect {
     -fx-fill: rgba(0, 0, 0, 0.58);
     -fx-stroke: rgba(0, 0, 0, 0.58);
     -fx-arc-width: 110.0;
     -fx-arc-height: 110.0;
 }
+#store {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-stroke: rgba(0, 0, 0, 0);
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-min-hieght: 300;
+    -fx-min-width: 110;
+    -fx-max-hieght: 300;
+    -fx-max-width: 110;
+    -fx-background-arc-width: 110.0;
+    -fx-background-arc-height: 110.0;
+}
 
-#circ{
+#circ {
     -fx-fill: rgba(0, 0, 0, 0.58);
     -fx-stroke: rgba(0, 0, 0, 0.58);
 }
 
-#circ:hover{
+#circ:hover {
     -fx-fill: rgba(25, 25, 25, 0.58);
     -fx-stroke: rgba(25, 25, 25, 0.58);
 }
 
-.button{
+#pit {
     -fx-text-fill: white;
     -fx-font-size: 20;
     -fx-background-radius: 70.0;
@@ -34,17 +46,21 @@
     -fx-stroke: rgba(0, 0, 0, 0.58);
 }
 
-.button:hover{
+#pit:hover {
     -fx-background-color: rgba(25, 25, 25, 0.58);
     -fx-stroke: rgba(25, 25, 25, 0.58);
 }
 
-.button:pressed{
+#pit:pressed {
     -fx-background-color: rgba(86, 86, 86, 0.58);
     -fx-stroke: rgba(86, 86, 86, 0.58);
 }
 
-#text{
+#text {
     -fx-fill: white;
     -fx-font-size: 20;
+}
+#player {
+    -fx-fill: gray;
+    -fx-font-size: 30;
 }
