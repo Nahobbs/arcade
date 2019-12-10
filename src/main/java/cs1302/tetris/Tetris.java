@@ -1,5 +1,6 @@
 package cs1302.tetris;
 
+import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -8,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.GridPane;
 import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
 import javafx.scene.paint.Color;
 import java.util.Random;
 import javafx.collections.ObservableList;
@@ -16,6 +18,15 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.Group;
+import javafx.util.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
+import javafx.animation.Animation;
+import javafx.event.ActionEvent;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 /**
  * The logic and structure for a standard game of Tetris. Includes
@@ -33,57 +44,59 @@ public class Tetris extends Application {
 
     private VBox board;
     private VBox score;
-    private Group container;
+    private HBox container;
     private int width;
     private int height;
     private Rectangle base;
     private Rectangle white;
     private GridPane gp;
-    private Timeline tl;
+    private Timeline tl, inner;
     private Rectangle[] current = new Rectangle[4];
     private Rectangle[][] grid = new Rectangle[20][10];
     private int numLines = 0;
-    private boolean playing = true;
+    private boolean playing = true, dropping = true, spawn = false, done = false;
     private Tetrominoe piece;
     private Tetrominoe[] shapes;
     private Color[] colors = {
         Color.WHITE, Color.LIGHTGREEN, Color.RED, Color.ORANGE, Color.NAVY,
-        Color.YELLOW, Color.LIGHTCYAN, Color.MEDIUMPURPLE
+        Color.YELLOW, Color.CYAN, Color.MEDIUMPURPLE
     };
     private Random rand = new Random();
     private int s = 30;
     private int[][] coords = new int[4][2];
+    private Timer timer;
+    private TimerTask drop;
+    private boolean turned = false;
 
     /**
      * The start method for the application.
+     * @param stage the stage to add things to
      */
     public void start(Stage stage) {
-        board = new VBox();
-        score = new VBox();
-        container = new Group();
-        width = 10;
-        height = 20;
-        base = new Rectangle(s, s);
-        white = new Rectangle(s, s, Color.WHITE);
-        white.setStroke(Color.BLACK);
-        gp = new GridPane();
-        gp.setGridLinesVisible(true);
-        //tl = new Timeline();
-        shapes = Tetrominoe.values();
-        defaultStart();
-        turn();
-        //System.out.println(gp.getChildren());
-        while (playing) {
-            playing = false;
-        }
-        container.setOnKeyPressed(move());
-        //board.getChildren().add(gp);
-        container.getChildren().addAll(score, gp);
+        init(stage);
+        EventHandler<ActionEvent> game = event -> {
+            if (!spawn) {
+                randomShape(shapes);
+                makeShape();
+                spawn = true;
+            }
+            moveDown();
+            if (done) {
+                checkBoard();
+                done = false;
+                spawn = false;
+            }
+        };
+        KeyFrame fuck = new KeyFrame(Duration.seconds(1), game);
+        tl.getKeyFrames().add(fuck);
+        tl.play();
 
+        container.setOnKeyPressed(move());
+        container.getChildren().addAll(score, board);
         Scene scene = new Scene(container);
         stage.sizeToScene();
         stage.setMaxWidth(550);
-        stage.setMaxHeight(550);
+        stage.setMaxHeight(700);
         stage.setTitle("Tetris");
         stage.setScene(scene);
         stage.show();
@@ -100,24 +113,68 @@ public class Tetris extends Application {
         return event -> {
             switch (event.getCode()) {
             case LEFT:
-                Runnable r1 = () -> {
-                    updateLeft();
-                };
-                Thread t1 = new Thread(r1);
-                t1.start();
+                updateLeft();
                 break;
             case RIGHT:
-                Runnable r2 = () -> {
-                    updateLeft();
-                };
-                Thread t2 = new Thread(r2);
-                t2.start();
+                updateRight();
+                break;
+            case DOWN:
+                moveDown();
                 break;
             default:
             }
         };
     } //move
 
+    /**
+     * Cleans out the grid.
+     */
+    public void clean() {
+        Rectangle[][] g2 = new Rectangle[20][10];
+        grid = g2;
+    } //clean
+
+    /**
+     * Initializes everything in one method.
+     */
+    public void init(Stage stage) {
+        board = new VBox();
+        score = new VBox();
+        makeStatus(stage);
+        container = new HBox();
+        width = 10;
+        height = 20;
+        base = new Rectangle(s, s);
+        white = new Rectangle(s, s, Color.WHITE);
+        white.setStroke(Color.BLACK);
+        gp = new GridPane();
+        //gp.setGridLinesVisible(true);
+        board.getChildren().add(gp);
+        tl = new Timeline();
+        tl.setCycleCount(Animation.INDEFINITE);
+        tl.setAutoReverse(true);
+        inner = new Timeline();
+        inner.setCycleCount(10);
+        inner.setAutoReverse(true);
+        defaultStart();
+        shapes = Tetrominoe.values();
+        clean();
+    } //init
+
+    /**
+     * Makes the status part of the board.
+     */
+    public void makeStatus(Stage stage) {
+        Text tetris = new Text("TETRIS");
+        tetris.setUnderline(true);
+        Label clears = new Label("Lines Cleared: " + numLines);
+        Button quit = new Button("Quit");
+        EventHandler<ActionEvent> exit = event -> {
+            stage.close();
+        };
+        quit.setOnAction(exit);
+        score.getChildren().addAll(tetris, clears, quit);
+    } //makeStatus
 
     /**
      * Creates the shape for the current piece out of four
@@ -166,14 +223,14 @@ public class Tetris extends Application {
                 addShape(1, i, r);
                 count++;
             }
-        } else if (style == 3) {
+        } else if (style == 3) { //L-shape block
             for (int i = 5; i < 8; i++) {
                 r = new Rectangle(s, s, colors[style]);
                 r.setStroke(Color.BLACK);
                 coords[count][0] = 0;
                 coords[count][1] = i;
                 current[count] = r;
-                addShape(1, i, r);
+                addShape(0, i, r);
                 count++;
             }
             for (int i = 5; i < 6; i++) {
@@ -185,14 +242,14 @@ public class Tetris extends Application {
                 addShape(1, i, r);
                 count++;
             }
-        } else if (style == 4) {
+        } else if (style == 4) { //Mirror L-shape block
             for (int i = 5; i < 8; i++) {
                 r = new Rectangle(s, s, colors[style]);
                 r.setStroke(Color.BLACK);
                 coords[count][0] = 0;
                 coords[count][1] = i;
                 current[count] = r;
-                addShape(1, i, r);
+                addShape(0, i, r);
                 count++;
             }
             for (int i = 7; i < 8; i++) {
@@ -204,14 +261,14 @@ public class Tetris extends Application {
                 addShape(1, i, r);
                 count++;
             }
-        } else if (style == 5) {
+        } else if (style == 5) { //Square shape block
             for (int i = 6; i < 8; i++) {
                 r = new Rectangle(s, s, colors[style]);
                 r.setStroke(Color.BLACK);
                 coords[count][0] = 0;
                 coords[count][1] = i;
                 current[count] = r;
-                addShape(1, i, r);
+                addShape(0, i, r);
                 count++;
             }
             for (int i = 6; i < 8; i++) {
@@ -223,24 +280,24 @@ public class Tetris extends Application {
                 addShape(1, i, r);
                 count++;
             }
-        } else if (style == 6) {
+        } else if (style == 6) { //Line block
             for (int i = 5; i < 9; i++) {
                 r = new Rectangle(s, s, colors[style]);
                 r.setStroke(Color.BLACK);
                 coords[count][0] = 0;
                 coords[count][1] = i;
                 current[count] = r;
-                addShape(1, i, r);
+                addShape(0, i, r);
                 count++;
             }
-        } else if (style == 7) {
+        } else if (style == 7) { //T-shape block
             for (int i = 5; i < 8; i++) {
                 r = new Rectangle(s, s, colors[style]);
                 r.setStroke(Color.BLACK);
                 coords[count][0] = 0;
                 coords[count][1] = i;
                 current[count] = r;
-                addShape(1, i, r);
+                addShape(0, i, r);
                 count++;
             }
             for (int i = 6; i < 7; i++) {
@@ -271,8 +328,7 @@ public class Tetris extends Application {
      * directions.
      */
     public boolean testMove(int row, int col) {
-        Rectangle spot = getRect(row, col);
-        if (spot.getFill() == Color.WHITE && row < 20 && row >= 0 && col < 10 && col >= 0) {
+        if (grid[row][col] == null && row < 20 && row >= 0 && col < 10 && col >= 0) {
             return true;
         } else {
             return false;
@@ -284,13 +340,20 @@ public class Tetris extends Application {
      * Moves the piece to the left.
      */
     public void updateLeft() {
-        System.out.println("left");
-        for (int i = 1; i <= 4; i++) {
-            int row = findR(i);
-            int col = findC(i);
+        //System.out.println("left");
+        for (int i = 0; i < 4; i++) {
+            Rectangle r = new Rectangle(s, s, current[i].getFill());
+            r.setStroke(Color.BLACK);
+            Rectangle w = new Rectangle(s, s, white.getFill());
+            w.setStroke(Color.BLACK);
+            int row = coords[i][0];
+            int col = coords[i][1];
             if (testMove(row, col - 1)) {
-                addShape(row, col - 1, getRect(row, col));
-                addShape(row, col, white);
+                //remove(row, col - 1);
+                addShape(row, col - 1, r);
+                //remove(row, col);
+                addShape(row, col, w);
+                coords[i][1] = col - 1;
             }
         }
 
@@ -300,24 +363,202 @@ public class Tetris extends Application {
      * Moves the piece to the right.
      */
     public void updateRight() {
-        System.out.println("right");
-        for (int i = 1; i <= 4; i++) {
-            int row = findR(i);
-            int col = findC(i);
+        for (int i = 3; i >= 0; i--) {
+            Rectangle r = new Rectangle(s, s, current[i].getFill());
+            r.setStroke(Color.BLACK);
+            Rectangle w = new Rectangle(s, s, white.getFill());
+            w.setStroke(Color.BLACK);
+            int row = coords[i][0];
+            int col = coords[i][1];
             if (testMove(row, col + 1)) {
-                addShape(row, col + 1, getRect(row, col));
-                addShape(row, col, white);
+                //remove(row, col + 1);
+                addShape(row, col + 1, r);
+                //remove(row, col);
+                addShape(row, col, w);
+                coords[i][1] = col + 1;
             }
         }
 
     } //updateRight
 
     /**
+     * Initiates gameover.
+     */
+    public void gameOver() {
+        playing = false;
+    }
+
+    /**
      * Rotates left.
      */
     public void rotateLeft() {
+        int style = piece.ordinal();
+        switch (style) {
+        case 1:
+        }
 
     } //rotateLeft
+
+    /**
+     * Sub-rotation for the S-piece.
+     */
+    public void switches(int i, int row, int col, Rectangle r) {
+    } //switches
+
+
+    /**
+     * Rotates an S-Piece.
+     */
+    public void rotateS() {
+        if (turned) {
+            for (int i = 0; i < 4; i++) {
+                Rectangle r = new Rectangle(s, s, current[i].getFill());
+                r.setStroke(Color.BLACK);
+                Rectangle w = new Rectangle(s, s, white.getFill());
+                w.setStroke(Color.BLACK);
+                int row = coords[i][0];
+                int col = coords[i][1];
+                switch (i) {
+                case 0:
+                    addShape(row - 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 1;
+                    break;
+                case 1:
+                    addShape(row - 2, col + 1, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 2;
+                    coords[i][1] = col + 1;
+                    break;
+                case 2:
+                    addShape(row + 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 1;
+                    break;
+                case 3:
+                    addShape(row, col + 1, r);
+                    addShape(row, col, w);
+                    coords[i][1] = col + 1;
+                    break;
+                default:
+                    break;
+                }
+                turned = false;
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                Rectangle r = new Rectangle(s, s, current[i].getFill());
+                r.setStroke(Color.BLACK);
+                Rectangle w = new Rectangle(s, s, white.getFill());
+                w.setStroke(Color.BLACK);
+                int row = coords[i][0];
+                int col = coords[i][1];
+                switch (i) {
+                case 0:
+                    addShape(row + 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 1;
+                    break;
+                case 1:
+                    addShape(row + 2, col - 1, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 2;
+                    coords[i][1] = col - 1;
+                    break;
+                case 2:
+                    addShape(row - 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 1;
+                    break;
+                case 3:
+                    addShape(row, col - 1, r);
+                    addShape(row, col, w);
+                    coords[i][1] = col - 1;
+                    break;
+                default:
+                    break;
+                }
+                turned = true;
+            }
+        }
+    } //rotateS
+
+    /**
+     * Rotates a Z-piece.
+     */
+    public void rotateZ() {
+        if (turned) {
+            for (int i = 0; i < 4; i++) {
+                Rectangle r = new Rectangle(s, s, current[i].getFill());
+                r.setStroke(Color.BLACK);
+                Rectangle w = new Rectangle(s, s, white.getFill());
+                w.setStroke(Color.BLACK);
+                int row = coords[i][0];
+                int col = coords[i][1];
+                switch (i) {
+                case 0:
+                    addShape(row - 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 1;
+                    break;
+                case 1:
+                    addShape(row - 2, col + 1, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 2;
+                    coords[i][1] = col + 1;
+                    break;
+                case 2:
+                    addShape(row + 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 1;
+                    break;
+                case 3:
+                    addShape(row, col + 1, r);
+                    addShape(row, col, w);
+                    coords[i][1] = col + 1;
+                    break;
+                default:
+                    break;
+                }
+                turned = false;
+            }
+        } else {
+            for (int i = 0; i < 4; i++) {
+                Rectangle r = new Rectangle(s, s, current[i].getFill());
+                r.setStroke(Color.BLACK);
+                Rectangle w = new Rectangle(s, s, white.getFill());
+                w.setStroke(Color.BLACK);
+                int row = coords[i][0];
+                int col = coords[i][1];
+                switch (i) {
+                case 0:
+                    addShape(row + 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 1;
+                    break;
+                case 1:
+                    addShape(row + 2, col - 1, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 2;
+                    coords[i][1] = col - 1;
+                    break;
+                case 2:
+                    addShape(row - 1, col, r);
+                    addShape(row, col, w);
+                    coords[i][0] = row - 1;
+                    break;
+                case 3:
+                    addShape(row, col - 1, r);
+                    addShape(row, col, w);
+                    coords[i][1] = col - 1;
+                    break;
+                default:
+                    break;
+                }
+                turned = true;
+            }
+        }
+    } //rotateS
 
     /**
      * Rotates right.
@@ -331,67 +572,61 @@ public class Tetris extends Application {
      * to be looped indefinitely as a part of the animation.
      */
     public void moveDown() {
+        for (int i = 3; i >= 0; i--) {
+            Rectangle r = new Rectangle(s, s, current[i].getFill());
+            r.setStroke(Color.BLACK);
+            Rectangle w = new Rectangle(s, s, white.getFill());
+            w.setStroke(Color.BLACK);
+            int row = coords[i][0];
+            int col = coords[i][1];
+            if (row + 1 < 20) {
+                if (testMove(row + 1, col)) {
+                    //remove(row + 1, col);
+                    addShape(row + 1, col, r);
+                    //remove(row, col);
+                    addShape(row, col, w);
+                    coords[i][0] = row + 1;
+                } else {
+                    done = true;
+                    gridAdd();
+                    break;
+                }
+            } else {
+                done = true;
+                gridAdd();
+                break;
+
+            }
+        }
 
     } //moveDown
 
     /**
-     * Finds the current piece on the board and returns it's location.
-     * @param n the number of the rectangle in the piece to find and move
-     * @return the rectangle at the specified location
+     * Adds a shape to the Rectangle grid.
      */
-    public int findR(int n) {
-        Color find = colors[piece.ordinal()];
-        int count = 0;
-        int result = 0;
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (getRect(i, j).getFill() == find) {
-                    count++;
-                    if (count == n) {
-                        result = i;
-                        count++;
-                    }
-                }
-            }
+    public void gridAdd() {
+        for (int i = 3; i >= 0; i--) {
+            Rectangle r = new Rectangle(s, s, current[i].getFill());
+            r.setStroke(Color.BLACK);
+            Rectangle w = new Rectangle(s, s, white.getFill());
+            w.setStroke(Color.BLACK);
+            int row = coords[i][0];
+            int col = coords[i][1];
+            grid[row][col] = r;
         }
-        return result;
 
-    } //findR
-
-    /**
-     * Finds the current piece on the board and returns it's location.
-     * @param n the number of the rectangle in the piece to find and move
-     * @return the rectangle at the specified location
-     */
-    public int findC(int n) {
-        Color find = colors[piece.ordinal()];
-        int count = 0;
-        int result = 0;
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (getRect(i, j).getFill() == find) {
-                    count++;
-                    if (count == n) {
-                        result = j;
-                        count++;
-                    }
-                }
-            }
-        }
-        return result;
-
-    } //findC
+    } //gridAdd
 
     /**
      * Scans the board from the bottom up to see how many rows
      * are full of rectangles.
      */
     public void checkBoard() {
-        for (int i = 20; i >= 0; i--) {
+        for (int i = 19; i >= 0; i--) {
             int count = 0;
-            for (int j = 0; j < 10; j++) {
-                Rectangle test = getRect(i, j);
-                if (test.getFill() != Color.WHITE) {
+            for (int j = 0; j < 9; j++) {
+                Rectangle test = grid[i][j];
+                if (test != null) {
                     count++;
                 }
             }
@@ -423,8 +658,8 @@ public class Tetris extends Application {
     public void shiftDown(int row) {
         for (int i = row; i >= 0; i--) {
             for (int j = 0; j < 10; j++) {
-                if (getRect(i - 1, j).getFill() != Color.WHITE) {
-                    addShape(i, j, getRect(i - 1, j));
+                if (grid[i][j].getFill() != Color.WHITE) {
+                    addShape(i, j, grid[i][j]);
                 }
             }
         }
@@ -444,36 +679,12 @@ public class Tetris extends Application {
      */
     public void defaultStart() {
         for (int i = 0; i < height; i++) {
-            for (int j = 1; j < width; j++) {
+            for (int j = 0; j < width; j++) {
                 Rectangle fill = new Rectangle(s, s, Color.WHITE);
                 fill.setStroke(Color.BLACK);
                 gp.add(fill, j, i);
             }
         }
     } //defaultStart
-
-    /**
-     * Gets a child from the GridPane to compare to other elements.
-     * @param row the row to examine
-     * @param col the column to examine
-     * @return the rectangle at the given point
-     */
-    public Rectangle getRect (int row, int column) {
-        //return (Rectangle) gp.getChildren().get(row * 20 + column);
-        for (Node node : gp.getChildren()) {
-        if (gp.getColumnIndex(node) == column && gp.getRowIndex(node) == row) {
-            return (Rectangle) node;
-        }
-    }
-    return null;
-    } //getRect
-
-    /**
-     * A turn in the game.
-     */
-    public void turn() {
-        randomShape(shapes);
-        makeShape();
-    } //turn
 
 } //Tetris
