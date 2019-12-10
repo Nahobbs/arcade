@@ -27,6 +27,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
+import javafx.scene.text.Font;
 
 /**
  * The logic and structure for a standard game of Tetris. Includes
@@ -47,10 +48,9 @@ public class Tetris extends Application {
     private HBox container;
     private int width;
     private int height;
-    private Rectangle base;
     private Rectangle white;
     private GridPane gp;
-    private Timeline tl, inner;
+    private Timeline tl;
     private Rectangle[] current = new Rectangle[4];
     private Rectangle[][] grid = new Rectangle[20][10];
     private int numLines = 0;
@@ -64,10 +64,13 @@ public class Tetris extends Application {
     private Random rand = new Random();
     private int s = 30;
     private int[][] coords = new int[4][2];
-    private Timer timer;
-    private TimerTask drop;
-    private boolean turned = false;
+    private double time = 1000;
     private int assBlast = 0; //variable for dealing with rotating L, J, and T piece
+    private int level = 1;
+    private Label clears, scores;
+    private int playScore = 0;
+
+
 
     /**
      * The start method for the application.
@@ -81,7 +84,6 @@ public class Tetris extends Application {
                 done = false;
                 makeShape();
                 assBlast = 0;
-                turned = false;
                 spawn = true;
             }
             moveDown();
@@ -89,9 +91,10 @@ public class Tetris extends Application {
                 checkBoard();
                 done = false;
                 spawn = false;
+                updateSpeed();
             }
         };
-        KeyFrame fuck = new KeyFrame(Duration.seconds(1), game);
+        KeyFrame fuck = new KeyFrame(Duration.millis(time), game);
         tl.getKeyFrames().add(fuck);
         tl.play();
 
@@ -107,6 +110,38 @@ public class Tetris extends Application {
         container.requestFocus();
 
     } //start
+
+    /**
+     * Updates the game speed depending on the level of the game.
+     */
+    public void updateSpeed() {
+        if (numLines < 10) {
+            level = 1;
+            time = 1000;
+        } else if (numLines >= 10 && numLines < 20) {
+            level = 2;
+            time = 750;
+        } else {
+            level = 3;
+            time = 500;
+        }
+    } //updateSpeed
+
+    /**
+     * Updates the status to accomadate the new lines cleared.
+     */
+    public void updateStatus() {
+        clears.setText("Lines Cleared: " + numLines);
+        scores.setText("Score: " + calcScore());
+    } //updateStatus
+
+    /**
+     * Calculates the score based on the lines cleared.
+     * @return the value of the players score for the game.
+     */
+    public int calcScore() {
+        return playScore += (numLines * 100);
+    } //calcScore
 
     /**
      * Creates the KeyEvents that occur when the buttons for the game
@@ -147,11 +182,13 @@ public class Tetris extends Application {
     public void init(Stage stage) {
         board = new VBox();
         score = new VBox();
+        clears = new Label();
+        scores = new Label();
+        updateStatus();
         makeStatus(stage);
         container = new HBox();
         width = 10;
         height = 20;
-        base = new Rectangle(s, s);
         white = new Rectangle(s, s, Color.WHITE);
         white.setStroke(Color.BLACK);
         gp = new GridPane();
@@ -159,12 +196,12 @@ public class Tetris extends Application {
         tl = new Timeline();
         tl.setCycleCount(Animation.INDEFINITE);
         tl.setAutoReverse(true);
-        inner = new Timeline();
-        inner.setCycleCount(10);
-        inner.setAutoReverse(true);
         defaultStart();
         shapes = Tetrominoe.values();
         clean();
+        spawn = false;
+        done = false;
+        assBlast = 0;
     } //init
 
     /**
@@ -173,13 +210,13 @@ public class Tetris extends Application {
     public void makeStatus(Stage stage) {
         Text tetris = new Text("TETRIS");
         tetris.setUnderline(true);
-        Label clears = new Label("Lines Cleared: " + numLines);
+        tetris.setFont(new Font(s));
         Button quit = new Button("Quit");
         EventHandler<ActionEvent> exit = event -> {
             stage.close();
         };
         quit.setOnAction(exit);
-        score.getChildren().addAll(tetris, clears, quit);
+        score.getChildren().addAll(tetris, clears, scores, quit);
     } //makeStatus
 
     /**
@@ -408,7 +445,7 @@ public class Tetris extends Application {
                 addShape(row, col, eRect(white.getFill()));
             }
         }
-        if (!turned) {
+        if (assBlast == 0) {
             int row = coords[3][0];
             int col = coords[3][1];
             addShape(row - 1, col, eRect(current[3].getFill()));
@@ -420,7 +457,7 @@ public class Tetris extends Application {
             addShape(row + 1, col + 1, eRect(current[3].getFill()));
             coords[2][0] = row + 1;
             coords[2][1] = col + 1;
-            turned = false;
+            assBlast++;
         } else {
             int row = coords[3][0];
             int col = coords[3][1];
@@ -433,7 +470,7 @@ public class Tetris extends Application {
             addShape(row - 1, col + 1, eRect(current[3].getFill()));
             coords[2][0] = row - 1;
             coords[2][1] = col + 1;
-            turned = true;
+            assBlast = 0;
         }
     } //rotateS
 
@@ -448,7 +485,7 @@ public class Tetris extends Application {
                 addShape(row, col, eRect(white.getFill()));
             }
         }
-        if (!turned) {
+        if (assBlast == 0) {
             int row = coords[2][0];
             int col = coords[2][1];
             addShape(row - 1, col + 1, eRect(current[2].getFill()));
@@ -460,7 +497,7 @@ public class Tetris extends Application {
             addShape(row + 1, col, eRect(current[2].getFill()));
             coords[3][0] = row + 1;
             coords[3][1] = col;
-            turned = false;
+            assBlast++;
         } else {
             int row = coords[3][0];
             int col = coords[3][1];
@@ -473,7 +510,7 @@ public class Tetris extends Application {
             addShape(row, col + 1, eRect(current[2].getFill()));
             coords[3][0] = row;
             coords[3][1] = col + 1;
-            turned = true;
+            assBlast = 0;
         }
     } //rotateZ
 
@@ -488,10 +525,10 @@ public class Tetris extends Application {
                 addShape(row, col, eRect(white.getFill()));
             }
         }
-        if (!turned) {
+        if (assBlast == 0) {
             int row = coords[1][0];
             int col = coords[1][1];
-            addShape(row - 1, col + 1, eRect(current[1].getFill()));
+            addShape(row - 1, col, eRect(current[1].getFill()));
             coords[0][0] = row - 1;
             coords[0][1] = col;
             addShape(row + 1, col, eRect(current[1].getFill()));
@@ -500,7 +537,7 @@ public class Tetris extends Application {
             addShape(row + 2, col, eRect(current[1].getFill()));
             coords[3][0] = row + 2;
             coords[3][1] = col;
-            turned = false;
+            assBlast++;
         } else {
             int row = coords[1][0];
             int col = coords[1][1];
@@ -513,7 +550,7 @@ public class Tetris extends Application {
             addShape(row, col + 2, eRect(current[1].getFill()));
             coords[3][0] = row;
             coords[3][1] = col + 2;
-            turned = true;
+            assBlast = 0;
         }
     } //rotateLine
 
@@ -673,11 +710,9 @@ public class Tetris extends Application {
      */
     public void rotateJ() {
         for (int i = 0; i < 4; i++) {
-            if (i != 1) {
-                int row = coords[i][0];
-                int col = coords[i][1];
-                addShape(row, col, eRect(white.getFill()));
-            }
+            int row = coords[i][0];
+            int col = coords[i][1];
+            addShape(row, col, eRect(white.getFill()));
         }
         if (assBlast == 0) {
             int row = coords[1][0];
@@ -685,25 +720,28 @@ public class Tetris extends Application {
             addShape(row - 1, col, eRect(current[1].getFill()));
             coords[0][0] = row - 1;
             coords[0][1] = col;
-            addShape(row + 1, col, eRect(current[1].getFill()));
-            coords[2][0] = row + 1;
-            coords[2][1] = col;
             addShape(row - 1, col + 1, eRect(current[1].getFill()));
-            coords[3][0] = row - 1;
-            coords[3][1] = col + 1;
+            coords[1][0] = row - 1;
+            coords[1][1] = col + 1;
+            addShape(row, col, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col;
             assBlast++;
         } else if (assBlast == 1) {
-            int row = coords[1][0];
-            int col = coords[1][1];
-            addShape(row, col - 1, eRect(current[1].getFill()));
-            coords[0][0] = row;
-            coords[0][1] = col - 1;
-            addShape(row, col + 1, eRect(current[1].getFill()));
-            coords[2][0] = row;
-            coords[2][1] = col + 1;
+            int row = coords[2][0];
+            int col = coords[2][1];
             addShape(row - 1, col - 1, eRect(current[1].getFill()));
-            coords[3][0] = row - 1;
-            coords[3][1] = col - 1;
+            coords[0][0] = row - 1;
+            coords[0][1] = col - 1;
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[1][0] = row;
+            coords[1][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row;
+            coords[3][1] = col + 1;
             assBlast++;
         } else {
             rotateJ2();
@@ -715,21 +753,24 @@ public class Tetris extends Application {
      */
     public void rotateJ2() {
         if (assBlast == 2) {
-            int row = coords[1][0];
-            int col = coords[1][1];
-            addShape(row + 1, col, eRect(current[1].getFill()));
-            coords[0][0] = row + 1;
-            coords[0][1] = col;
+            int row = coords[2][0];
+            int col = coords[2][1];
             addShape(row - 1, col, eRect(current[1].getFill()));
-            coords[2][0] = row - 1;
-            coords[2][1] = col;
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row, col, eRect(current[1].getFill()));
+            coords[1][0] = row;
+            coords[1][1] = col;
             addShape(row + 1, col - 1, eRect(current[1].getFill()));
+            coords[2][0] = row + 1;
+            coords[2][1] = col - 1;
+            addShape(row + 1, col, eRect(current[1].getFill()));
             coords[3][0] = row + 1;
-            coords[3][1] = col - 1;
+            coords[3][1] = col;
             assBlast++;
         } else if (assBlast == 3) {
-            int row = coords[3][0];
-            int col = coords[3][1];
+            int row = coords[1][0];
+            int col = coords[1][1];
             addShape(row, col - 1, eRect(current[1].getFill()));
             coords[0][0] = row;
             coords[0][1] = col - 1;
