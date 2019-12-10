@@ -1,0 +1,14 @@
+#pane {
+    -fx-background-image: url("file:resources/arcade/arcade_skin.jpg");
+    -fx-background-repeat: stretch;
+    -fx-background-size: 600 600;
+    -fx-background-position: center center;
+}
+
+#tetris_bu {
+    -fx-background-image: url("file:resources/arcade/red_button_up.png");
+    -fx-background-size: 90px 90px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -border-radius: 50%;
+}
