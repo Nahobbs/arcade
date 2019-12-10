@@ -23,7 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javafx.animation.Animation;
 import javafx.event.ActionEvent;
-
+import javafx.scene.paint.Paint;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
@@ -67,6 +67,7 @@ public class Tetris extends Application {
     private Timer timer;
     private TimerTask drop;
     private boolean turned = false;
+    private int assBlast = 0; //variable for dealing with rotating L, J, and T piece
 
     /**
      * The start method for the application.
@@ -77,7 +78,10 @@ public class Tetris extends Application {
         EventHandler<ActionEvent> game = event -> {
             if (!spawn) {
                 randomShape(shapes);
+                done = false;
                 makeShape();
+                assBlast = 0;
+                turned = false;
                 spawn = true;
             }
             moveDown();
@@ -121,6 +125,9 @@ public class Tetris extends Application {
             case DOWN:
                 moveDown();
                 break;
+            case R:
+                rotate();
+                break;
             default:
             }
         };
@@ -148,7 +155,6 @@ public class Tetris extends Application {
         white = new Rectangle(s, s, Color.WHITE);
         white.setStroke(Color.BLACK);
         gp = new GridPane();
-        //gp.setGridLinesVisible(true);
         board.getChildren().add(gp);
         tl = new Timeline();
         tl.setCycleCount(Animation.INDEFINITE);
@@ -177,141 +183,102 @@ public class Tetris extends Application {
     } //makeStatus
 
     /**
+     * Takes in the row, column, and count of makeshape and adds it
+     * to the grid.
+     * @param row the row of the new shape
+     * @param col the column of the new shape
+     * @param count the count from makeShape
+     */
+    public void genShape(int row, int col, int count) {
+        int style = piece.ordinal();
+        Rectangle r = new Rectangle(s, s, colors[style]);
+        r.setStroke(Color.BLACK);
+        coords[count][0] = row;
+        coords[count][1] = col;
+        current[count] = r;
+        addShape(row, col, r);
+    } //genShape
+
+    /**
      * Creates the shape for the current piece out of four
      * new rectangle objects.
      */
     public void makeShape() {
         int style = piece.ordinal();
-        base.setFill(colors[style]);
-        Rectangle r;
         int count = 0;
         if (style == 1) { //S-shape block
             for (int i = 6; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 5; i < 7; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
         } else if (style == 2) { //Z-shape block
             for (int i = 5; i < 7; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 6; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
         } else if (style == 3) { //L-shape block
             for (int i = 5; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 5; i < 6; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
-        } else if (style == 4) { //Mirror L-shape block
+        } else {
+            makeShape2(style);
+        }
+    } //makeShape
+
+    /**
+     * The continuation of makeShape, forced into existence by the method
+     * length requirement of checkstyle.
+     * @param style the integer value to check for if it wasn't found at first
+     */
+    public void makeShape2(int style) {
+        int count = 0;
+        if (style == 4) { //Mirror L-shape block
             for (int i = 5; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 7; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
         } else if (style == 5) { //Square shape block
             for (int i = 6; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 6; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
         } else if (style == 6) { //Line block
             for (int i = 5; i < 9; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
         } else if (style == 7) { //T-shape block
             for (int i = 5; i < 8; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 0;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(0, i, r);
+                genShape(0, i, count);
                 count++;
             }
             for (int i = 6; i < 7; i++) {
-                r = new Rectangle(s, s, colors[style]);
-                r.setStroke(Color.BLACK);
-                coords[count][0] = 1;
-                coords[count][1] = i;
-                current[count] = r;
-                addShape(1, i, r);
+                genShape(1, i, count);
                 count++;
             }
         }
-
-    } //makeShape
+    } //makeShape2
 
     /**
      * Adds created shape to the grid.
@@ -389,183 +356,392 @@ public class Tetris extends Application {
     }
 
     /**
-     * Rotates left.
+     * Rotates the piece.
      */
-    public void rotateLeft() {
+    public void rotate() {
         int style = piece.ordinal();
         switch (style) {
         case 1:
+            rotateS();
+            break;
+        case 2:
+            rotateZ();
+            break;
+        case 3:
+            rotateL();
+            break;
+        case 4:
+            rotateJ();
+            break;
+        case 5:
+            break;
+        case 6:
+            rotateLine();
+            break;
+        case 7:
+            rotateT();
+            break;
+        default:
+            break;
         }
-
     } //rotateLeft
 
     /**
-     * Sub-rotation for the S-piece.
+     * Makes a new Rectangle for the rotations.
+     * @param fill the fill for the new rectangle
      */
-    public void switches(int i, int row, int col, Rectangle r) {
-    } //switches
+    public Rectangle eRect(Paint fill) {
+        Rectangle r = new Rectangle(s, s, fill);
+        r.setStroke(Color.BLACK);
+        return r;
+    } //eRect
 
 
     /**
      * Rotates an S-Piece.
      */
     public void rotateS() {
-        if (turned) {
-            for (int i = 0; i < 4; i++) {
-                Rectangle r = new Rectangle(s, s, current[i].getFill());
-                r.setStroke(Color.BLACK);
-                Rectangle w = new Rectangle(s, s, white.getFill());
-                w.setStroke(Color.BLACK);
+        for (int i = 0; i < 4; i++) {
+            if (i != 3) {
                 int row = coords[i][0];
                 int col = coords[i][1];
-                switch (i) {
-                case 0:
-                    addShape(row - 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 1;
-                    break;
-                case 1:
-                    addShape(row - 2, col + 1, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 2;
-                    coords[i][1] = col + 1;
-                    break;
-                case 2:
-                    addShape(row + 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 1;
-                    break;
-                case 3:
-                    addShape(row, col + 1, r);
-                    addShape(row, col, w);
-                    coords[i][1] = col + 1;
-                    break;
-                default:
-                    break;
-                }
-                turned = false;
+                addShape(row, col, eRect(white.getFill()));
             }
+        }
+        if (!turned) {
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row - 1, col, eRect(current[3].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row, col + 1, eRect(current[3].getFill()));
+            coords[1][0] = row;
+            coords[1][1] = col + 1;
+            addShape(row + 1, col + 1, eRect(current[3].getFill()));
+            coords[2][0] = row + 1;
+            coords[2][1] = col + 1;
+            turned = false;
         } else {
-            for (int i = 0; i < 4; i++) {
-                Rectangle r = new Rectangle(s, s, current[i].getFill());
-                r.setStroke(Color.BLACK);
-                Rectangle w = new Rectangle(s, s, white.getFill());
-                w.setStroke(Color.BLACK);
-                int row = coords[i][0];
-                int col = coords[i][1];
-                switch (i) {
-                case 0:
-                    addShape(row + 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 1;
-                    break;
-                case 1:
-                    addShape(row + 2, col - 1, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 2;
-                    coords[i][1] = col - 1;
-                    break;
-                case 2:
-                    addShape(row - 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 1;
-                    break;
-                case 3:
-                    addShape(row, col - 1, r);
-                    addShape(row, col, w);
-                    coords[i][1] = col - 1;
-                    break;
-                default:
-                    break;
-                }
-                turned = true;
-            }
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row, col - 1, eRect(current[3].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row - 1, col, eRect(current[3].getFill()));
+            coords[1][0] = row - 1;
+            coords[1][1] = col;
+            addShape(row - 1, col + 1, eRect(current[3].getFill()));
+            coords[2][0] = row - 1;
+            coords[2][1] = col + 1;
+            turned = true;
         }
     } //rotateS
 
     /**
-     * Rotates a Z-piece.
+     * Rotates an S-Piece.
      */
     public void rotateZ() {
-        if (turned) {
-            for (int i = 0; i < 4; i++) {
-                Rectangle r = new Rectangle(s, s, current[i].getFill());
-                r.setStroke(Color.BLACK);
-                Rectangle w = new Rectangle(s, s, white.getFill());
-                w.setStroke(Color.BLACK);
+        for (int i = 0; i < 4; i++) {
+            if (i != 2) {
                 int row = coords[i][0];
                 int col = coords[i][1];
-                switch (i) {
-                case 0:
-                    addShape(row - 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 1;
-                    break;
-                case 1:
-                    addShape(row - 2, col + 1, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 2;
-                    coords[i][1] = col + 1;
-                    break;
-                case 2:
-                    addShape(row + 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 1;
-                    break;
-                case 3:
-                    addShape(row, col + 1, r);
-                    addShape(row, col, w);
-                    coords[i][1] = col + 1;
-                    break;
-                default:
-                    break;
-                }
-                turned = false;
-            }
-        } else {
-            for (int i = 0; i < 4; i++) {
-                Rectangle r = new Rectangle(s, s, current[i].getFill());
-                r.setStroke(Color.BLACK);
-                Rectangle w = new Rectangle(s, s, white.getFill());
-                w.setStroke(Color.BLACK);
-                int row = coords[i][0];
-                int col = coords[i][1];
-                switch (i) {
-                case 0:
-                    addShape(row + 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 1;
-                    break;
-                case 1:
-                    addShape(row + 2, col - 1, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 2;
-                    coords[i][1] = col - 1;
-                    break;
-                case 2:
-                    addShape(row - 1, col, r);
-                    addShape(row, col, w);
-                    coords[i][0] = row - 1;
-                    break;
-                case 3:
-                    addShape(row, col - 1, r);
-                    addShape(row, col, w);
-                    coords[i][1] = col - 1;
-                    break;
-                default:
-                    break;
-                }
-                turned = true;
+                addShape(row, col, eRect(white.getFill()));
             }
         }
-    } //rotateS
+        if (!turned) {
+            int row = coords[2][0];
+            int col = coords[2][1];
+            addShape(row - 1, col + 1, eRect(current[2].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col + 1;
+            addShape(row, col + 1, eRect(current[2].getFill()));
+            coords[1][0] = row;
+            coords[1][1] = col + 1;
+            addShape(row + 1, col, eRect(current[2].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col;
+            turned = false;
+        } else {
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row - 1, col - 1, eRect(current[2].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col - 1;
+            addShape(row - 1, col, eRect(current[2].getFill()));
+            coords[1][0] = row - 1;
+            coords[1][1] = col;
+            addShape(row, col + 1, eRect(current[2].getFill()));
+            coords[3][0] = row;
+            coords[3][1] = col + 1;
+            turned = true;
+        }
+    } //rotateZ
 
     /**
-     * Rotates right.
+     * Rotates a line.
      */
-    public void rotateRight() {
+    public void rotateLine() {
+        for (int i = 0; i < 4; i++) {
+            if (i != 1) {
+                int row = coords[i][0];
+                int col = coords[i][1];
+                addShape(row, col, eRect(white.getFill()));
+            }
+        }
+        if (!turned) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col + 1, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[2][0] = row + 1;
+            coords[2][1] = col;
+            addShape(row + 2, col, eRect(current[1].getFill()));
+            coords[3][0] = row + 2;
+            coords[3][1] = col;
+            turned = false;
+        } else {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row, col + 2, eRect(current[1].getFill()));
+            coords[3][0] = row;
+            coords[3][1] = col + 2;
+            turned = true;
+        }
+    } //rotateLine
 
-    } //rotateRight
+    /**
+     * Rotates the T-piece.
+     */
+    public void rotateT() {
+        for (int i = 0; i < 4; i++) {
+            if (i != 1) {
+                int row = coords[i][0];
+                int col = coords[i][1];
+                addShape(row, col, eRect(white.getFill()));
+            }
+        }
+        if (assBlast == 0) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col - 1;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col;
+            assBlast++;
+        } else if (assBlast == 1) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row;
+            coords[3][1] = col + 1;
+            assBlast++;
+        } else {
+            rotateT2();
+        }
+    } //rotateT
+
+    /**
+     * Rotates the T-piece.
+     */
+    public void rotateT2() {
+        if (assBlast == 2) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col;
+            assBlast++;
+        } else if (assBlast == 3) {
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col;
+            assBlast = 0;
+        }
+    } //rotateT2
+
+
+    /**
+     * Rotates the L-piece.
+     */
+    public void rotateL() {
+        for (int i = 0; i < 4; i++) {
+            if (i != 1) {
+                int row = coords[i][0];
+                int col = coords[i][1];
+                addShape(row, col, eRect(white.getFill()));
+            }
+        }
+        if (assBlast == 0) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[2][0] = row + 1;
+            coords[2][1] = col;
+            addShape(row + 1, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col + 1;
+            assBlast++;
+        } else if (assBlast == 1) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row - 1, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row - 1;
+            coords[3][1] = col + 1;
+            assBlast++;
+        } else {
+            rotateL2();
+        }
+    } //rotateL
+
+    /**
+     * Rotates the L-piece.
+     */
+    public void rotateL2() {
+        if (assBlast == 2) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row + 1;
+            coords[0][1] = col;
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[2][0] = row - 1;
+            coords[2][1] = col;
+            addShape(row - 1, col - 1, eRect(current[1].getFill()));
+            coords[3][0] = row - 1;
+            coords[3][1] = col - 1;
+            assBlast++;
+        } else if (assBlast == 3) {
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row + 1, col - 1, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col - 1;
+            assBlast = 0;
+        }
+    } //rotateL2
+
+    /**
+     * Rotates the J-piece.
+     */
+    public void rotateJ() {
+        for (int i = 0; i < 4; i++) {
+            if (i != 1) {
+                int row = coords[i][0];
+                int col = coords[i][1];
+                addShape(row, col, eRect(white.getFill()));
+            }
+        }
+        if (assBlast == 0) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row - 1;
+            coords[0][1] = col;
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[2][0] = row + 1;
+            coords[2][1] = col;
+            addShape(row - 1, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row - 1;
+            coords[3][1] = col + 1;
+            assBlast++;
+        } else if (assBlast == 1) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row - 1, col - 1, eRect(current[1].getFill()));
+            coords[3][0] = row - 1;
+            coords[3][1] = col - 1;
+            assBlast++;
+        } else {
+            rotateJ2();
+        }
+    } //rotateJ
+
+    /**
+     * Rotates the J-piece.
+     */
+    public void rotateJ2() {
+        if (assBlast == 2) {
+            int row = coords[1][0];
+            int col = coords[1][1];
+            addShape(row + 1, col, eRect(current[1].getFill()));
+            coords[0][0] = row + 1;
+            coords[0][1] = col;
+            addShape(row - 1, col, eRect(current[1].getFill()));
+            coords[2][0] = row - 1;
+            coords[2][1] = col;
+            addShape(row + 1, col - 1, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col - 1;
+            assBlast++;
+        } else if (assBlast == 3) {
+            int row = coords[3][0];
+            int col = coords[3][1];
+            addShape(row, col - 1, eRect(current[1].getFill()));
+            coords[0][0] = row;
+            coords[0][1] = col - 1;
+            addShape(row, col + 1, eRect(current[1].getFill()));
+            coords[2][0] = row;
+            coords[2][1] = col + 1;
+            addShape(row + 1, col + 1, eRect(current[1].getFill()));
+            coords[3][0] = row + 1;
+            coords[3][1] = col + 1;
+            assBlast = 0;
+        }
+    } //rotateJ2
 
     /**
      * Moves the piece down one row of the pane; designed
@@ -579,43 +755,29 @@ public class Tetris extends Application {
             w.setStroke(Color.BLACK);
             int row = coords[i][0];
             int col = coords[i][1];
-            if (row + 1 < 20) {
-                if (testMove(row + 1, col)) {
-                    //remove(row + 1, col);
-                    addShape(row + 1, col, r);
-                    //remove(row, col);
-                    addShape(row, col, w);
-                    coords[i][0] = row + 1;
-                } else {
-                    done = true;
-                    gridAdd();
-                    break;
-                }
+            if (!done && row + 1 < 20 && testMove(row + 1, col)) {
+                addShape(row + 1, col, r);
+                addShape(row, col, w);
+                coords[i][0] = row + 1;
             } else {
                 done = true;
-                gridAdd();
-                break;
-
+                append();
             }
+
         }
 
     } //moveDown
 
     /**
-     * Adds a shape to the Rectangle grid.
+     * Appends the shape to the grid given the situation.
      */
-    public void gridAdd() {
+    public void append() {
         for (int i = 3; i >= 0; i--) {
-            Rectangle r = new Rectangle(s, s, current[i].getFill());
-            r.setStroke(Color.BLACK);
-            Rectangle w = new Rectangle(s, s, white.getFill());
-            w.setStroke(Color.BLACK);
             int row = coords[i][0];
             int col = coords[i][1];
-            grid[row][col] = r;
+            grid[row][col] = eRect(current[i].getFill());
         }
-
-    } //gridAdd
+    } //append
 
     /**
      * Scans the board from the bottom up to see how many rows
@@ -624,7 +786,7 @@ public class Tetris extends Application {
     public void checkBoard() {
         for (int i = 19; i >= 0; i--) {
             int count = 0;
-            for (int j = 0; j < 9; j++) {
+            for (int j = 0; j < 10; j++) {
                 Rectangle test = grid[i][j];
                 if (test != null) {
                     count++;
@@ -645,9 +807,9 @@ public class Tetris extends Application {
      */
     public void clearRow(int row) {
         for (int i = 0; i < 10; i++) {
-            Rectangle fill = new Rectangle(s, s, Color.WHITE);
-            fill.setStroke(Color.BLACK);
-            addShape(row, i, fill);
+            addShape(row, i, eRect(white.getFill()));
+            grid[row][i] = null;
+            numLines++;
         }
     } //clearRow
 
@@ -658,8 +820,8 @@ public class Tetris extends Application {
     public void shiftDown(int row) {
         for (int i = row; i >= 0; i--) {
             for (int j = 0; j < 10; j++) {
-                if (grid[i][j].getFill() != Color.WHITE) {
-                    addShape(i, j, grid[i][j]);
+                if (grid[i - 1][j] != null) {
+                    addShape(i, j, grid[i - 1][j]);
                 }
             }
         }
