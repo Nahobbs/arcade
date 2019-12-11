@@ -800,7 +800,7 @@ public class Tetris extends Application {
                 addShape(row + 1, col, r);
                 addShape(row, col, w);
                 coords[i][0] = row + 1;
-            } else {
+            } else if (!done) {
                 done = true;
                 append();
             }
@@ -836,6 +836,7 @@ public class Tetris extends Application {
             if (count == 10) {
                 clearRow(i);
                 shiftDown(i);
+                numLines++;
             }
         }
 
@@ -850,7 +851,6 @@ public class Tetris extends Application {
         for (int i = 0; i < 10; i++) {
             addShape(row, i, eRect(white.getFill()));
             grid[row][i] = null;
-            numLines++;
         }
     } //clearRow
 
@@ -863,6 +863,7 @@ public class Tetris extends Application {
             for (int j = 0; j < 10; j++) {
                 if (grid[i - 1][j] != null) {
                     addShape(i, j, grid[i - 1][j]);
+                    grid[i][j] = grid[i - 1][j];
                 }
             }
         }
