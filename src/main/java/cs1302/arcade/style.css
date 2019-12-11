@@ -5,10 +5,50 @@
     -fx-background-position: center center;
 }
 
-#tetris_bu {
+#tetris_but {
     -fx-background-image: url("file:resources/arcade/red_button_up.png");
-    -fx-background-size: 90px 90px;
+    -fx-background-size: 40px 40px;
+    -fx-background-radius: 20;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -border-radius: 50%;
+}
+
+#tetris_but:pressed {
+    -fx-background-image: url("file:resources/arcade/red_button_down.png");
+    -fx-background-size: 40px 40px;
+    -fx-background-radius: 20;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#man_but {
+    -fx-background-image: url("file:resources/arcade/yellow_button_up.png");
+    -fx-background-size: 40px 40px;
+    -fx-background-radius: 20;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#man_but:pressed {
+    -fx-background-image: url("file:resources/arcade/yellow_button_down.png");
+    -fx-background-size: 40px 40px;
+    -fx-background-radius: 20;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }
