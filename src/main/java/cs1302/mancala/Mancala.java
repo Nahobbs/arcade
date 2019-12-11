@@ -124,20 +124,47 @@ public class Mancala extends Application {
         pits.setHgap(6);
         pits.setVgap(6);
 
-        vbox = new VBox();
+        vbox = new VBox(5);
         Hbox = new HBox();
         //uses the helper methods to set up the game
         addPits();
         makeArrays();
+        enable(p1Buttons);
         disable(p2Buttons);
         setIds();
         setButtonActions();
         setSeeds();
-
+        Button quit = new Button("Quit");
+        quit.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    reset();
+                    stage.close();
+                } //handle
+            });
+        Button reset = new Button("Reset");
+        reset.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    reset();
+                    stage.close();
+                    Mancala game = new Mancala();
+                    game.start(new Stage());
+                } //handle
+            });
+        quit.setId("exit");
+        reset.setId("exit");
+        Text pl1 = new Text("<----- player 1");
+        Text pl2 = new Text("player 2 ----->");
+        pl1.setId("text");
+        pl2.setId("text");
         //creates scene
+        HBox buttons = new HBox(10, quit, reset);
+        buttons.setAlignment(Pos.CENTER);
         Hbox.getChildren().addAll(stackPoints(s1), pits, stackPoints(s2));
         Hbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(Hbox);
+        vbox.getChildren().addAll(pl1, Hbox, pl2, buttons);
+        vbox.setAlignment(Pos.CENTER);
         vbox.setId("pane");
     } //init
 
@@ -1017,6 +1044,7 @@ public class Mancala extends Application {
                                     "    Player2: " + player2Total);
             score.setFont(new Font(30.0));
             VBox winBox = new VBox();
+            Button quit = new Button("Quit");
             winBox.getChildren().addAll(winner, score, options());
             winBox.setAlignment(Pos.CENTER);
             Scene winScene = new Scene(winBox);
@@ -1047,28 +1075,49 @@ public class Mancala extends Application {
 
     private static HBox options() {
         Button quit = new Button("Quit");
-            quit.setOnAction(new EventHandler<ActionEvent>() {
+        quit.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    reset();
                     win.close();
                     stage.close();
                 } //handle
             });
-            Button replay = new Button("Play again?");
-            replay.setOnAction(new EventHandler<ActionEvent>() {
+        Button replay = new Button("Play again?");
+        replay.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
+                    reset();
                     win.close();
                     stage.close();
                     Mancala game = new Mancala();
                     game.start(new Stage());
                 } //handle
             });
-            HBox options = new HBox();
-            options.getChildren().addAll(quit, replay);
-            options.setAlignment(Pos.CENTER);
-            return options;
+        HBox options = new HBox();
+        options.getChildren().addAll(quit, replay);
+        options.setAlignment(Pos.CENTER);
+        return options;
     } //options
+
+    private static void reset() {
+        p1 = 4;
+        p2 = 4;
+        p3 = 4;
+        p4 = 4;
+        p5 = 4;
+        p6 = 4;
+        p7 = 4;
+        p8 = 4;
+        p9 = 4;
+        p10 = 4;
+        p11 = 4;
+        p12 = 4;
+        store1 = 0;
+        store2 = 0;
+        set();
+        updateArrays();
+    } //reset
 
     /**
      * Disables the buttons after players turn ends.

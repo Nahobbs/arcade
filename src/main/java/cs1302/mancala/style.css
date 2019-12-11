@@ -5,6 +5,28 @@
     -fx-background-position: center center;
 }
 
+#exit {
+    -fx-text-fill: white;
+    -fx-font-size: 20;
+    -fx-min-width: 140.0;
+    -fx-min-height: 70.0;
+    -fx-max-width: 140.0;
+    -fx-max-height: 70.0;
+    -fx-background-color: rgba(0, 0, 0, 0.58);
+    -fx-stroke: rgba(0, 0, 0, 0.58);
+}
+
+#exit:hover {
+    -fx-background-color: rgba(25, 25, 25, 0.58);
+    -fx-stroke: rgba(25, 25, 25, 0.58);
+}
+
+#exit:pressed {
+    -fx-background-color: rgba(86, 86, 86, 0.58);
+    -fx-stroke: rgba(86, 86, 86, 0.58);
+}
+
+
 #rect {
     -fx-fill: rgba(0, 0, 0, 0.58);
     -fx-stroke: rgba(0, 0, 0, 0.58);
@@ -57,7 +79,7 @@
 }
 
 #text {
-    -fx-fill: white;
+    -fx-text-fill: grey;
     -fx-font-size: 20;
 }
 #player {
