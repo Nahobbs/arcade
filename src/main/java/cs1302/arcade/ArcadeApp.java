@@ -26,7 +26,7 @@ import cs1302.mancala.Mancala;
 public class ArcadeApp extends Application {
 
     Group group = new Group();           // main container
-    HBox buttons = new HBox();
+    HBox buttons = new HBox();           // button container
     Rectangle r = new Rectangle(20, 20); // some rectangle
     Button tetris = new Button();
     Button mancala = new Button();
@@ -34,6 +34,7 @@ public class ArcadeApp extends Application {
     /** {@inheritDoc} */
     @Override
     public void start(Stage stage) {
+        //adds functionality to the tetris button
         Stage tetrisStage = new Stage();
         tetrisStage.initModality(Modality.APPLICATION_MODAL);
         Tetris game = new Tetris();
@@ -42,7 +43,7 @@ public class ArcadeApp extends Application {
         };
         tetris.setOnAction(tetrisStart);
         buttons.getChildren().add(tetris);
-
+        //adds functionality to the mancala button
         Stage mancalaStage = new Stage();
         mancalaStage.initModality(Modality.APPLICATION_MODAL);
         EventHandler<ActionEvent> mancalaStart = event -> {
@@ -50,22 +51,21 @@ public class ArcadeApp extends Application {
             game2.start(mancalaStage);
         };
         mancala.setOnAction(mancalaStart);
-        buttons.getChildren().add(mancala);
 
+        buttons.getChildren().add(mancala);
         group.getChildren().add(buttons);
 
-        StackPane sp = new StackPane();
+        //used to add background
+        StackPane sp = new StackPane(group);
 
-        sp.getChildren().add(group);
-
+        //sets ID's for styling
         sp.setId("pane");
-
-        tetris.setTranslateX(-150.0);
-        tetris.setTranslateY(500.0);
-
         tetris.setId("tetris_but");
         mancala.setId("man_but");
 
+        //moves the buttons to desired location
+        tetris.setTranslateX(-150.0);
+        tetris.setTranslateY(500.0);
         mancala.setTranslateX(20.0);
         mancala.setTranslateY(500.0);
 
@@ -75,11 +75,6 @@ public class ArcadeApp extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();
-
-        // the group must request input focus to receive key events
-        // @see https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Node.html#requestFocus--
-        group.requestFocus();
-
     } // start
 
 } // ArcadeApp

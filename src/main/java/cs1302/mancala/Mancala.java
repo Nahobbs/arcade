@@ -106,18 +106,9 @@ public class Mancala extends Application {
         stage.show();
     } //Mancala
 
-    // public static void main(String[] args) {
-    //     try {
-    //         Application.launch(Mancala.class, args);
-    //     } catch (UnsupportedOperationException e) {
-    //         System.out.println(e);
-    //         System.err.println("If this is a DISPLAY problem, then your X server connection");
-    //         System.err.println("has likely timed out. This can generally be fixed by logging");
-    //         System.err.println("out and logging back in.");
-    //         System.exit(1);
-    //     } // try
-    // } // main
-
+    /**
+     * Inintializes instance variables.
+     */
     private static void set() {
         pits = new GridPane();
         pits.setPadding(new Insets(10, 10, 10, 10));
@@ -1018,8 +1009,6 @@ public class Mancala extends Application {
 
     /**
      * Checks to see if one players pits are empty and the game is over.
-     *
-     * @return true if one side is empty, flase otherwise
      */
     private static void checkGameOver() {
         boolean check = false;
@@ -1063,16 +1052,21 @@ public class Mancala extends Application {
      */
     private static Label winner(int player1Total, int player2Total) {
         if (player1Total > player2Total) {
-                Label winner = new Label("Player 1 Wins!");
-                winner.setFont(new Font(30.0));
-                return winner;
-            } else {
-                Label winner = new Label("Player 2 Wins!");
-                winner.setFont(new Font(30.0));
-                return winner;
-            } //if
+            Label winner = new Label("Player 1 Wins!");
+            winner.setFont(new Font(30.0));
+            return winner;
+        } else {
+            Label winner = new Label("Player 2 Wins!");
+            winner.setFont(new Font(30.0));
+            return winner;
+        } //if
     } //winner
 
+    /**
+     * Helper method that creates buttons and sets their functionality. Used for end game message.
+     *
+     * @return HBox containing the buttons
+     */
     private static HBox options() {
         Button quit = new Button("Quit");
         quit.setOnAction(new EventHandler<ActionEvent>() {
@@ -1100,6 +1094,9 @@ public class Mancala extends Application {
         return options;
     } //options
 
+    /**
+     * Reinitializes variables to how they are to begin with.
+     */
     private static void reset() {
         p1 = 4;
         p2 = 4;
